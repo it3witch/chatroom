@@ -10,3 +10,5 @@
 - 完善用户界面
 - 添加好友功能
 - 使用Electron打包成桌面应用
+
+启动时, 在chat-backend中启动main.py, chat-frontend下npm run dev启动服务器
