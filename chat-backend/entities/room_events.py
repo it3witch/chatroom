@@ -4,6 +4,9 @@ import json
 from models import db, Room
 from routes.room import save_user_room_relation
 
+online_users = set()
+sid_to_nickname = {}
+
 def init_room_events(socketio):
     @socketio.event
     def joinRoom(message):
@@ -50,6 +53,11 @@ def init_room_events(socketio):
             "message": f"你已加入房间 {room}"
             # 没有 to 参数，表示这是发给用户自己的消息
         })
+        
+        # 广播更新在线人数
+        online_users.add(nickname)
+        sid_to_nickname[sid] = nickname
+        emit('update_online_users', list(online_users), broadcast=True)
 
     @socketio.event
     def leaveRoom(message):
@@ -65,5 +73,20 @@ def init_room_events(socketio):
         
         leave_room(room)  # 用户离开房间
         print(f"用户 {nickname} 已离开房间 {room}")
-        
-        emit('roomLeft', {'room': room, 'user': sid, 'nickname': nickname}, to=room) 
+        emit('roomLeft', {'room': room, 'user': sid, 'nickname': nickname}, to=room)
+        # 广播更新在线人数
+        online_users.discard(nickname)
+        sid_to_nickname.pop(sid, None)
+        emit('update_online_users', list(online_users), broadcast=True)
+    
+    @socketio.event
+    def disconnect():
+        sid = request.sid # type: ignore
+        nickname = sid_to_nickname.pop(sid, None)
+        if nickname:
+            print(f"用户 {nickname} 离线，SID: {sid}")
+            online_users.discard(nickname)
+            del sid_to_nickname[sid]
+            emit('update_online_users', list(online_users), broadcast=True)
+        else:
+            print(f"未知用户断开连接，SID: {sid}")

@@ -64,8 +64,8 @@
     </div>
 
     <div class="online-user">
-      <h3># Online Users ({{ onlineUsers.length - 1 }})</h3>
-      <ul class="user-list" v-if="onlineUsers.length > 1">
+      <h3># Online Users ({{ onlineUsers.length}})</h3>
+      <ul class="user-list" v-if="onlineUsers.length > 0">
         <li v-for="onlineUser in onlineUsers" :key="onlineUser" v-if="onlineUser !== user">
           {{ onlineUser }}
         </li>
@@ -362,6 +362,13 @@ export default {
       }
     });
 
+    // 监听在线用户列表
+    socket.on('update_online_users', (onlineUsers) => {
+      if (this.user) {
+        this.onlineUsers = onlineUsers;  // 用后端传来的用户列表更新数据
+      }
+    })
+    
     // 重新连接时恢复房间状态
     window.addEventListener('load', () => {
       // 如果在刷新前已加入房间，则重新加入
