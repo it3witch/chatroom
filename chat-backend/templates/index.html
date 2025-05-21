@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Flask Socketio</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.js"></script>
+        <script type="text/javascript" src="{{url_for('static',filename='js/index.js')}}"></script>
+    </head>
+    <body>
+        <h1>Join Room</h1>
+        <form id="joinRoom" method="post" action="#">
+            <label>房间号</label>
+            <input type="text"  id="roomNum" required>
+            <input type="submit" id="submitRoomNum">
+        </form>
+        <button id="leave_room">Leave</button>
+
+        <ul id="chatContent"></ul>
+
+        <form id="SubmitForm" method="post" action="#">
+            <textarea placeholder="在此输入..." name="msg" id="chatMsg" required></textarea>
+            <button type="submit">发送</button>
+        </form>
+    </body>
+</html>
