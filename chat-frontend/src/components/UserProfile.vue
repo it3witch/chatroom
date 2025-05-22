@@ -1,3 +1,4 @@
+<!-- ChatInput.vue - 处理消息输入 -->
 <template>
   <div class="user-profile">
     <div class="user-info" v-if="!nickname">

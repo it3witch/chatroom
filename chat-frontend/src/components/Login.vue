@@ -1,3 +1,4 @@
+<!-- Login.vue - 登录和注册界面 -->
 <template>
   <div class="content">
       <div class="wrapper">
