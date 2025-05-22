@@ -4,7 +4,9 @@
     <h3># Online Users ({{ onlineUsers.length}})</h3>
     <ul class="user-list" v-if="onlineUsers.length > 0">
       <li v-for="onlineUser in onlineUsers" :key="onlineUser" v-if="onlineUser !== currentUser">
-        {{ onlineUser }}
+        <button class="user-button">
+          {{ onlineUser }}
+        </button>
       </li>
     </ul>
   </div>
@@ -49,5 +51,19 @@ export default {
 .user-list li {
   padding: 6px;
   font-size: 14px;
+}
+
+.user-button {
+  background: none;
+  border: none;
+  color: #e9ecef;
+  padding: 10px 50px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.user-button:hover {
+  color: #4695e4;
 }
 </style> 

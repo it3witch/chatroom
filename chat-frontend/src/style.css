@@ -67,7 +67,7 @@ button {
   margin: 0.5rem;
 }
 
-button:hover {
+chat.button:hover {
   background: #0077ed;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 113, 227, 0.2);
