@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import socket from '@/socket';
+
 export default {
   name: 'OnlineUsers',
   props: {
@@ -21,14 +23,14 @@ export default {
       required: true
     },
     currentUser: {
-      type: String,
+      type: Array,
       required: true
     }
   },
   methods: {
     startPrivateChat(user) {
       console.log('准备发起私聊：', user);
-      this.$socket.emit('start_private_chat', { to: user ,from: this.currentUser});
+      socket.emit('start_private_chat', { to: user, from: this.currentUser.nickname });
       // 这里将来写具体的私聊逻辑
     }
   }
