@@ -6,6 +6,7 @@ from routes.room import save_user_room_relation
 
 online_users = set()
 sid_to_nickname = {}
+nickname_to_sid = {}
 
 def init_room_events(socketio):
     @socketio.event
@@ -57,6 +58,7 @@ def init_room_events(socketio):
         # 广播更新在线人数
         online_users.add(nickname)
         sid_to_nickname[sid] = nickname
+        nickname_to_sid[nickname] = sid
         emit('update_online_users', list(online_users), broadcast=True)
 
     @socketio.event
@@ -77,6 +79,8 @@ def init_room_events(socketio):
         # 广播更新在线人数
         online_users.discard(nickname)
         sid_to_nickname.pop(sid, None)
+        if nickname:
+            nickname_to_sid.pop(nickname, None)
         emit('update_online_users', list(online_users), broadcast=True)
     
     @socketio.event

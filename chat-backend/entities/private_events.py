@@ -1,50 +1,35 @@
 from flask_socketio import emit, join_room, leave_room
 from flask import session, request
 import json
-from models import db, Room, Message
+from models import db, room, Message
 from datetime import datetime
+from room_events import nickname_to_sid
 
 def init_private_events(socketio):
-    @socketio.event
-    def join_private_room(message):
-        room_id = message.get('roomId', '')
-        user = message.get('user', '')
-        target_user = message.get('targetUser', '')
-        print(f"用户 {user} 请求与 {target_user} 开始私聊")
+    @socketio.on('start_private_chat')
+    def handle_private_chat(data):
+        to_user = data.get('to') # 目标方
+        from_user = data.get('from') # 发起方
+        print(f"{from_user} 想要和 {to_user} 私聊")
         
-        # 获取SocketIO连接ID
-        sid = request.sid  # type: ignore
-        
-        # 检查用户是否已经在私聊房间中
-        user_rooms = socketio.server.rooms(sid)
-        if room_id in user_rooms:
-            print(f"用户 {user} 已经在私聊房间 {room_id} 中")
-            return
-        
-        # 将发送者加入房间
-        join_room(room_id)
-        print(f"用户 {user} 已加入私聊房间 {room_id}")
+        room_name = generate_private_room_name(from_user, to_user)
+        sid = request.sid # type: ignore
+        join_room(room_name) # 发起方加入房间
 
-        # 通知房间内的所有用户
-        emit("private_room_joined", {
-            "roomId": room_id,
-            "users": [user, target_user]
-        }, to=room_id)
+        to_sid = nickname_to_sid.get(to_user)
+        if to_sid:
+             # 让目标用户加入该房间
+            socketio.server.enter_room(to_sid, room_name)
+            # 通知目标用户，告诉他有新私聊房间
+            emit('private_chat_invite', {
+                'room': room_name,
+                'from': from_user
+            }, to=to_sid)
+        
+        emit('private_chat_started', {
+            'room': room_name,
+            'to': to_user
+        }, to=sid)
 
-    @socketio.event
-    def leave_private_room(message):
-        room_id = message.get('roomId', '')
-        user = message.get('user', '')
-        print(f"用户 {user} 请求离开私聊房间: {room_id}")
-        
-        # 获取SocketIO连接ID
-        sid = request.sid  # type: ignore
-        
-        leave_room(room_id)  # 用户离开房间
-        print(f"用户 {user} 已离开私聊房间 {room_id}")
-        
-        # 通知房间内的其他用户
-        emit('private_room_left', {
-            'roomId': room_id,
-            'user': user
-        }, to=room_id) 
+    def generate_private_room_name(user1, user2):
+        return '_'.join(sorted([user1, user2]))

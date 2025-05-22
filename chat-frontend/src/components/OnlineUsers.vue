@@ -4,7 +4,7 @@
     <h3># Online Users ({{ onlineUsers.length}})</h3>
     <ul class="user-list" v-if="onlineUsers.length > 0">
       <li v-for="onlineUser in onlineUsers" :key="onlineUser" v-if="onlineUser !== currentUser">
-        <button class="user-button">
+        <button class="user-button" @click="startPrivateChat(onlineUser)">
           {{ onlineUser }}
         </button>
       </li>
@@ -23,6 +23,13 @@ export default {
     currentUser: {
       type: String,
       required: true
+    }
+  },
+  methods: {
+    startPrivateChat(user) {
+      console.log('准备发起私聊：', user);
+      this.$socket.emit('start_private_chat', { to: user ,from: this.currentUser});
+      // 这里将来写具体的私聊逻辑
     }
   }
 }
