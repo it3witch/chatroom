@@ -43,7 +43,7 @@ def init_room_events(socketio):
             "type": "system",
             "message": f"{nickname} 加入了房间",
             "to": "room"  # 标记这是发给房间的消息
-        }, to=room)  # 将事件发送到房间内的所有客户端
+        }, to=room, include_self=False)  # 将事件发送到房间内的所有客户端（除了自己）
 
         # 通知用户自己
         emit("roomJoined", {
