@@ -3,7 +3,7 @@ from flask import session, request
 import json
 from models import db, room, Message
 from datetime import datetime
-from room_events import nickname_to_sid
+from .room_events import nickname_to_sid
 
 def init_private_events(socketio):
     @socketio.on('start_private_chat')
@@ -25,6 +25,8 @@ def init_private_events(socketio):
                 'room': room_name,
                 'from': from_user
             }, to=to_sid)
+        else:
+            print(f"找不到用户 {to_user} 的 sid，无法邀请加入私聊房间")
         
         emit('private_chat_started', {
             'room': room_name,

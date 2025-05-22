@@ -57,6 +57,12 @@ export default {
     };
   },
   methods: {
+    addPrivateRoom(roomName, otherUser) {
+      if (!this.joinedRooms.includes(roomName)) {
+        this.joinedRooms.push(roomName);
+      }
+    },
+
     handleNicknameChange(newNickname) {
       this.nickname = newNickname;
     },
@@ -260,6 +266,14 @@ export default {
       if (this.user) {
         this.onlineUsers = onlineUsers;
       }
+    });
+
+    socket.on('private_chat_invite', (data) => {
+    this.addPrivateRoom(data.room, data.from);
+    });
+
+    socket.on('private_chat_started', (data) => {
+    this.addPrivateRoom(data.room, data.to);
     });
     
     window.addEventListener('load', () => {

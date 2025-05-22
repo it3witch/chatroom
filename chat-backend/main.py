@@ -8,13 +8,8 @@ from flask_cors import CORS
 from models import db, User, Room, UserRoom, Message
 from routes import user_bp, room_bp
 from routes.user import load_user
-from entities.room_events import init_room_events
-from entities.message_events import init_message_events
+from entities import init_socket_events
 import os
-
-def init_socket_events(socketio):
-    init_room_events(socketio)
-    init_message_events(socketio)
 
 # 创建 Flask 应用
 app = Flask(__name__, static_folder="static", template_folder="templates")
