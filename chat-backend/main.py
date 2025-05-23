@@ -19,7 +19,7 @@ app.config['SESSION_COOKIE_SECURE'] = False  # 开发环境设为False，生产�
 app.config['SESSION_COOKIE_HTTPONLY'] = True  # 防止JavaScript访问cookie
 
 # 配置数据库
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@localhost/chat_app'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@127.0.0.1:3306/chat_app'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 

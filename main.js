@@ -17,7 +17,7 @@ function createWindow() {
 
   // 加载前端构建的 index.html
   // 这里假设你已经在 chat-frontend 里运行了构建命令，生成 dist 文件夹
-  mainWindow.loadFile(path.join(__dirname, 'chat-frontend', 'dist', 'index.html'))
+  mainWindow.loadURL('http://localhost:5173')
 }
 
 app.whenReady().then(() => {
