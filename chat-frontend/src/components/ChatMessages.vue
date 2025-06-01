@@ -4,7 +4,13 @@
     <div v-for="message in messages" :key="message.id"
       :class="['message-row', message.type === 'system' ? 'system' : '']">
       <div class="message-content" v-if="message.type !== 'system'">
-        <div class="avatar-placeholder"></div>
+        <div class="avatar-wrapper">
+          <img 
+            :src="message.avatar || defaultAvatar" 
+            alt="用户头像" 
+            class="avatar-image"
+          />
+        </div>
         <div class="message-body">
           <div class="message-header">
             <span class="message-sender">{{ message.sender }}</span>
@@ -22,12 +28,19 @@
 </template>
 
 <script>
+import defaultAvatarImg from '@/assets/default_avatar.jpg';
+
 export default {
   name: 'ChatMessages',
   props: {
     messages: {
       type: Array,
       required: true
+    }
+  },
+  data() {
+    return {
+      defaultAvatar: defaultAvatarImg
     }
   },
   methods: {
@@ -72,12 +85,24 @@ export default {
   gap: 1rem;
 }
 
-.avatar-placeholder {
-  width: 40px;
-  height: 40px;
-  border-radius: 5px;
-  background: #e9ecef;
+.avatar-wrapper {
+  width: 43px;
+  height: 43px;
+  border-radius: 8px;
+  overflow: hidden;
   flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.avatar-image:hover {
+  transform: scale(1.05);
 }
 
 .message-body {
@@ -150,10 +175,6 @@ export default {
 
   .message-time {
     color: #adb5bd;
-  }
-
-  .avatar-placeholder {
-    background: #3d3d3d;
   }
 
   .message-sender {

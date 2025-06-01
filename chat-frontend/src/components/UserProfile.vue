@@ -12,7 +12,7 @@
     </div>
     <div class="user-display" v-else>
       <span class="nickname-display">{{ nickname }}</span>
-      <button class="change-nickname" @click="resetNickname">修改昵称</button>
+      <button class="change-nickname" @click="goToProfile">个人中心</button>
     </div>
   </div>
 </template>
@@ -34,11 +34,8 @@ export default {
         this.$emit('nickname-changed', this.nickname);
       }
     },
-    resetNickname() {
-      this.nickname = '';
-      this.tempNickname = '';
-      localStorage.removeItem('nickname');
-      this.$emit('nickname-changed', '');
+    goToProfile() {
+      this.$router.push('/profile');
     }
   }
 }

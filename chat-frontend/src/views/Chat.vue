@@ -53,7 +53,8 @@ export default {
       joinedRooms: [],
       onlineUsers: [],
       loading: false,
-      user: null
+      user: null,
+      defaultAvatar: 'https://via.placeholder.com/50'
     };
   },
   methods: {
@@ -67,19 +68,27 @@ export default {
       this.nickname = newNickname;
     },
     sendMessage(message) {
+      if (!message.trim()) return;
+      
       const messageData = {
-        room: this.room,
-        msg: message,
-        nickname: this.nickname
-      };
-      socket.emit('sendMsg', messageData);
-
-      this.messages.push({
         id: Date.now(),
-        sender: this.nickname,
         content: message,
-        time: new Date().toLocaleTimeString()
+        sender: this.nickname,
+        time: new Date().toLocaleTimeString(),
+        type: 'message',
+        avatar: localStorage.getItem('avatar') || this.defaultAvatar
+      };
+      
+      // 发送消息到服务器
+      socket.emit('sendMsg', {
+        msg: message,
+        nickname: this.nickname,
+        time: messageData.time,
+        room: this.room
       });
+      
+      // 添加到本地消息列表
+      this.messages.push(messageData);
     },
     async joinRoom(roomName) {
       if (roomName.trim() === '') return;
@@ -227,7 +236,9 @@ export default {
           id: Date.now(),
           sender: message.nickname,
           content: message.msg,
-          time: message.time || new Date().toLocaleTimeString()
+          time: message.time || new Date().toLocaleTimeString(),
+          type: 'message',
+          avatar: localStorage.getItem('avatar') || this.defaultAvatar
         });
       }
     });

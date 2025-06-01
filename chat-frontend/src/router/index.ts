@@ -17,6 +17,12 @@ const routes: RouteRecordRaw[] = [
     name: 'Chat',
     component: () => import('../views/Chat.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('../views/Profile.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

@@ -71,4 +71,39 @@ def login():
         })
     
     print(f"用户 {username} 登录失败，密码错误或用户不存在")
-    return jsonify({'success': False, 'message': '用户名或密码错误'}) 
+    return jsonify({'success': False, 'message': '用户名或密码错误'})
+
+# 更新头像接口
+@user_bp.route('/api/user/avatar', methods=['POST'])
+def update_avatar():
+    data = request.json
+    if not data:
+        return jsonify({'success': False, 'message': '无效的请求数据'})
+    
+    avatar_data = data.get('avatar')
+    if not avatar_data:
+        return jsonify({'success': False, 'message': '头像数据不能为空'})
+    
+    # 从session获取用户ID
+    user_id = None
+    if 'user' in session:
+        try:
+            user_data = json.loads(session['user'])
+            user_id = user_data.get('id')
+        except:
+            return jsonify({'success': False, 'message': '未找到用户信息'})
+    
+    if not user_id:
+        return jsonify({'success': False, 'message': '用户未登录'})
+    
+    # 更新用户头像
+    try:
+        user = User.query.get(user_id)
+        if user:
+            user.avatar = avatar_data
+            db.session.commit()
+            return jsonify({'success': True, 'message': '头像更新成功'})
+        else:
+            return jsonify({'success': False, 'message': '用户不存在'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'更新头像失败: {str(e)}'}) 

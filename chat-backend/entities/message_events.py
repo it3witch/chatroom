@@ -10,7 +10,7 @@ def init_message_events(socketio):
         room = message.get('room', '')
         msg = message.get('msg', '')
         nickname = message.get('nickname', '匿名用户')
-        print(f"收到消息 - 房间: {room}, 发送者: {nickname}, 内容: {msg}")
+        print(f"收到消息 - 房间: {room}, 发送者: {nickname}, 内容: {msg}")  
         # 如果用户已登录，保存消息到数据库
         try:
             if 'user' in session:
