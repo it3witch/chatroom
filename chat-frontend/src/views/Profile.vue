@@ -89,11 +89,25 @@ export default {
         }
       }
     },
-    saveNickname() {
+    async saveNickname() {
       if (this.tempNickname.trim()) {
-        this.nickname = this.tempNickname.trim();
-        localStorage.setItem('nickname', this.nickname);
-        this.$emit('nickname-changed', this.nickname);
+        try {
+          const response = await axios.post('/api/user/nickname', {
+            nickname: this.tempNickname.trim()
+          }, { withCredentials: true });
+          
+          if (response.data.success) {
+            this.nickname = this.tempNickname.trim();
+            localStorage.setItem('nickname', this.nickname);
+            this.$emit('nickname-changed', this.nickname);
+            alert('昵称更新成功');
+          } else {
+            alert('更新昵称失败：' + response.data.message);
+          }
+        } catch (error) {
+          console.error('更新昵称失败:', error);
+          alert('更新昵称失败，请稍后重试');
+        }
       }
     }
   }

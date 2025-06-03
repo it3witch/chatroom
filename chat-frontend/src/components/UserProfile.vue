@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'UserProfile',
   data() {
@@ -27,11 +29,25 @@ export default {
     }
   },
   methods: {
-    setNickname() {
+    async setNickname() {
       if (this.tempNickname.trim()) {
-        this.nickname = this.tempNickname.trim();
-        localStorage.setItem('nickname', this.nickname);
-        this.$emit('nickname-changed', this.nickname);
+        try {
+          const response = await axios.post('/api/user/nickname', {
+            nickname: this.tempNickname.trim()
+          }, { withCredentials: true });
+          
+          if (response.data.success) {
+            this.nickname = this.tempNickname.trim();
+            localStorage.setItem('nickname', this.nickname);
+            this.$emit('nickname-changed', this.nickname);
+            alert('昵称设置成功');
+          } else {
+            alert('设置昵称失败：' + response.data.message);
+          }
+        } catch (error) {
+          console.error('设置昵称失败:', error);
+          alert('设置昵称失败，请稍后重试');
+        }
       }
     },
     goToProfile() {

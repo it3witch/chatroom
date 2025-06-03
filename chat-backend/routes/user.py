@@ -106,4 +106,44 @@ def update_avatar():
         else:
             return jsonify({'success': False, 'message': '用户不存在'})
     except Exception as e:
-        return jsonify({'success': False, 'message': f'更新头像失败: {str(e)}'}) 
+        return jsonify({'success': False, 'message': f'更新头像失败: {str(e)}'})
+
+# 更新昵称接口
+@user_bp.route('/api/user/nickname', methods=['POST'])
+def update_nickname():
+    data = request.json
+    if not data:
+        return jsonify({'success': False, 'message': '无效的请求数据'})
+    
+    new_nickname = data.get('nickname')
+    if not new_nickname:
+        return jsonify({'success': False, 'message': '昵称不能为空'})
+    
+    # 从session获取用户ID
+    user_id = None
+    if 'user' in session:
+        try:
+            user_data = json.loads(session['user'])
+            user_id = user_data.get('id')
+        except:
+            return jsonify({'success': False, 'message': '未找到用户信息'})
+    
+    if not user_id:
+        return jsonify({'success': False, 'message': '用户未登录'})
+    
+    # 更新用户昵称
+    try:
+        user = User.query.get(user_id)
+        if user:
+            user.nickname = new_nickname
+            db.session.commit()
+            
+            # 更新session中的用户信息
+            user_data['nickname'] = new_nickname
+            session['user'] = json.dumps(user_data)
+            
+            return jsonify({'success': True, 'message': '昵称更新成功'})
+        else:
+            return jsonify({'success': False, 'message': '用户不存在'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'更新昵称失败: {str(e)}'}) 
