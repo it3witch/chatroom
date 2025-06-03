@@ -146,4 +146,46 @@ def update_nickname():
         else:
             return jsonify({'success': False, 'message': '用户不存在'})
     except Exception as e:
-        return jsonify({'success': False, 'message': f'更新昵称失败: {str(e)}'}) 
+        return jsonify({'success': False, 'message': f'更新昵称失败: {str(e)}'})
+
+# 修改密码接口
+@user_bp.route('/api/user/password', methods=['POST'])
+def update_password():
+    data = request.json
+    if not data:
+        return jsonify({'success': False, 'message': '无效的请求数据'})
+    
+    old_password = data.get('oldPassword')
+    new_password = data.get('newPassword')
+    
+    if not old_password or not new_password:
+        return jsonify({'success': False, 'message': '密码不能为空'})
+    
+    # 从session获取用户ID
+    user_id = None
+    if 'user' in session:
+        try:
+            user_data = json.loads(session['user'])
+            user_id = user_data.get('id')
+        except:
+            return jsonify({'success': False, 'message': '未找到用户信息'})
+    
+    if not user_id:
+        return jsonify({'success': False, 'message': '用户未登录'})
+    
+    # 更新用户密码
+    try:
+        user = User.query.get(user_id)
+        if user:
+            # 验证旧密码
+            if not user.check_password(old_password):
+                return jsonify({'success': False, 'message': '旧密码错误'})
+            
+            # 设置新密码
+            user.set_password(new_password)
+            db.session.commit()
+            return jsonify({'success': True, 'message': '密码修改成功'})
+        else:
+            return jsonify({'success': False, 'message': '用户不存在'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'修改密码失败: {str(e)}'}) 

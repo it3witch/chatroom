@@ -37,6 +37,27 @@
             </div>
           </div>
         </div>
+
+        <div class="password-section">
+          <div class="input-group">
+            <label>修改密码</label>
+            <div class="password-input-group">
+              <input 
+                v-model="oldPassword" 
+                type="password"
+                class="password-input" 
+                placeholder="请输入旧密码" 
+              />
+              <input 
+                v-model="newPassword" 
+                type="password"
+                class="password-input" 
+                placeholder="请输入新密码" 
+              />
+              <button class="save-button" @click="changePassword">修改密码</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -53,7 +74,9 @@ export default {
       nickname: localStorage.getItem('nickname') || '',
       tempNickname: localStorage.getItem('nickname') || '',
       avatarUrl: localStorage.getItem('avatar') || '',
-      defaultAvatar: defaultAvatarImg
+      defaultAvatar: defaultAvatarImg,
+      oldPassword: '',
+      newPassword: ''
     }
   },
   methods: {
@@ -108,6 +131,30 @@ export default {
           console.error('更新昵称失败:', error);
           alert('更新昵称失败，请稍后重试');
         }
+      }
+    },
+    async changePassword() {
+      if (!this.oldPassword || !this.newPassword) {
+        alert('请填写完整的密码信息');
+        return;
+      }
+
+      try {
+        const response = await axios.post('/api/user/password', {
+          oldPassword: this.oldPassword,
+          newPassword: this.newPassword
+        }, { withCredentials: true });
+        
+        if (response.data.success) {
+          alert('密码修改成功');
+          this.oldPassword = '';
+          this.newPassword = '';
+        } else {
+          alert('修改密码失败：' + response.data.message);
+        }
+      } catch (error) {
+        console.error('修改密码失败:', error);
+        alert('修改密码失败，请稍后重试');
       }
     }
   }
@@ -268,6 +315,35 @@ export default {
   box-shadow: 0 4px 12px rgba(0, 113, 227, 0.2);
 }
 
+.password-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+}
+
+.password-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.password-input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.password-input:focus {
+  outline: none;
+  border-color: #0071e3;
+  box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
+}
+
 @media (prefers-color-scheme: dark) {
   .profile-content {
     background: rgba(30, 30, 30, 0.9);
@@ -286,6 +362,16 @@ export default {
   }
 
   .nickname-input {
+    background: #3d3d3d;
+    border-color: #4d4d4d;
+    color: #e9ecef;
+  }
+
+  .password-section {
+    background: #2c2c2e;
+  }
+
+  .password-input {
     background: #3d3d3d;
     border-color: #4d4d4d;
     color: #e9ecef;
