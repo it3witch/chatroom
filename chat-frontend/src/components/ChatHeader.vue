@@ -9,7 +9,7 @@
         <button class="room-button" @click="joinRoom">
           JOIN
         </button>
-        <button class="room-button" @click="leaveRoom">
+        <button class="room-button" @click="leaveRoom" v-if="currentRoom">
           LEAVE
         </button>
       </div>
@@ -29,6 +29,10 @@ export default {
     nickname: {
       type: String,
       required: true
+    },
+    currentRoom: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -40,11 +44,12 @@ export default {
     joinRoom() {
       if (this.roomName.trim() === '') return;
       this.$emit('join-room', this.roomName);
+      this.roomName = '';
     },
     leaveRoom() {
-      if (this.roomName.trim() === '') return;
-      this.$emit('leave-room', this.roomName);
-      this.roomName = '';
+      if (this.currentRoom) {
+        this.$emit('leave-room', this.currentRoom);
+      }
     }
   }
 }

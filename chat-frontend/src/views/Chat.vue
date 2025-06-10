@@ -8,6 +8,7 @@
     <div class="main-content">
       <chat-header 
         :nickname="nickname"
+        :current-room="room"
         @nickname-changed="handleNicknameChange"
         @join-room="joinRoom"
         @leave-room="leaveRoom"
@@ -63,7 +64,6 @@ export default {
         this.joinedRooms.push(roomName);
       }
     },
-
     handleNicknameChange(newNickname) {
       this.nickname = newNickname;
     },
@@ -107,11 +107,6 @@ export default {
           }, { withCredentials: true });
 
           await this.fetchJoinedRooms();
-        } else {
-          if (!this.joinedRooms.includes(roomName)) {
-            this.joinedRooms.push(roomName);
-            localStorage.setItem('joinedRooms', JSON.stringify(this.joinedRooms));
-          }
         }
       } catch (error) {
         console.error('保存房间失败:', error);
@@ -133,12 +128,6 @@ export default {
           }, { withCredentials: true });
 
           await this.fetchJoinedRooms();
-        } else {
-          const index = this.joinedRooms.indexOf(roomName);
-          if (index !== -1) {
-            this.joinedRooms.splice(index, 1);
-            localStorage.setItem('joinedRooms', JSON.stringify(this.joinedRooms));
-          }
         }
       } catch (error) {
         console.error('更新房间失败:', error);
@@ -162,10 +151,6 @@ export default {
         room: roomName,
         nickname: this.nickname
       });
-
-      if (!this.user) {
-        localStorage.setItem('lastActiveRoom', roomName);
-      }
     },
     async fetchJoinedRooms() {
       if (!this.user) return;
@@ -181,12 +166,7 @@ export default {
           this.joinedRooms = roomNames;
 
           if (!this.room && this.joinedRooms.length > 0) {
-            const lastActiveRoom = localStorage.getItem('lastActiveRoom');
-            if (lastActiveRoom && this.joinedRooms.includes(lastActiveRoom)) {
-              this.switchRoom(lastActiveRoom);
-            } else {
-              this.switchRoom(this.joinedRooms[0]);
-            }
+            this.switchRoom(this.joinedRooms[0]);
           }
         }
       } catch (error) {
@@ -218,16 +198,6 @@ export default {
 
     if (this.user) {
       await this.fetchJoinedRooms();
-    } else {
-      const storedRooms = localStorage.getItem('joinedRooms');
-      if (storedRooms) {
-        try {
-          this.joinedRooms = JSON.parse(storedRooms);
-        } catch (e) {
-          console.error('解析本地存储的房间列表失败:', e);
-          this.joinedRooms = [];
-        }
-      }
     }
 
     socket.on('sendToAll', (message) => {
@@ -280,11 +250,11 @@ export default {
     });
 
     socket.on('private_chat_invite', (data) => {
-    this.addPrivateRoom(data.room, data.from);
+      this.addPrivateRoom(data.room, data.from);
     });
 
     socket.on('private_chat_started', (data) => {
-    this.addPrivateRoom(data.room, data.to);
+      this.addPrivateRoom(data.room, data.to);
     });
     
     window.addEventListener('load', () => {
